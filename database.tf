@@ -1,4 +1,4 @@
-## Copyright © 2020, Oracle and/or its affiliates. 
+## Copyright (c) 2021 Oracle and/or its affiliates.
 ## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
 resource "oci_database_autonomous_database" "ATPdatabase" {
@@ -12,10 +12,10 @@ resource "oci_database_autonomous_database" "ATPdatabase" {
   freeform_tags            = var.atp_freeform_tags
   license_model            = var.atp_license_model
   is_free_tier             = var.atp_free_tier
-  nsg_ids                  = var.atp_private_endpoint ? [oci_core_network_security_group.ATPSecurityGroup.id] : null  
-  private_endpoint_label   = var.atp_private_endpoint ? var.atp_private_endpoint_label : null  
+  nsg_ids                  = var.atp_private_endpoint ? [oci_core_network_security_group.ATPSecurityGroup.id] : null
+  private_endpoint_label   = var.atp_private_endpoint ? var.atp_private_endpoint_label : null
   subnet_id                = var.atp_private_endpoint ? oci_core_subnet.vcn01_subnet_db01.id : null
-  defined_tags             = {"${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }  
+  defined_tags             = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }
 
 resource "random_password" "wallet_password" {

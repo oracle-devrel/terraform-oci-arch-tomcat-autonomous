@@ -1,3 +1,4 @@
+# Copyright (c) 2021 Oracle and/or its affiliates.
 #!/bin/bash
 
 cp /home/opc/.ssh/authorized_keys /home/opc/.ssh/authorized_keys.bak

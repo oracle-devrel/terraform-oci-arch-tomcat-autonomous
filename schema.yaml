@@ -16,13 +16,13 @@ variableGroups:
   - release
   - oracle_instant_client_version
   - oracle_instant_client_version_short
-  - availablity_domain_number
+  - availability_domain_number
 
 - title: Required Configuration
   visible: true  
   variables:
   - compartment_ocid
-  - availablity_domain_name
+  - availability_domain_name
   - atp_password
   - atp_private_endpoint
   - atp_free_tier
@@ -103,7 +103,7 @@ variables:
     title: Compartment
     description: "Compartment where you want to create the solution resources"
 
-  availablity_domain_name:
+  availability_domain_name:
     type: oci:identity:availabilitydomain:name
     required: true
     visibile: true

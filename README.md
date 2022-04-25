@@ -40,8 +40,8 @@ If you don't have the required permissions and quota, contact your tenancy admin
 Now, you'll want a local copy of this repo. You can make that with the commands:
 
 ```
-    git clone https://github.com/oracle-quickstart/oci-arch-tomcat-autonomous.git
-    cd oci-arch-tomcat-autonomous
+    git clone https://github.com/oracle-devrel/terraform-oci-arch-tomcat-autonomous.git
+    cd terraform-oci-arch-tomcat-autonomous
     ls
 ```
 
@@ -105,8 +105,15 @@ For details of the architecture, see [_Deploy Apache Tomcat on Arm-based Ampere 
 ## Contributing
 This project is open source.  Please submit your contributions by forking this repository and submitting a pull request!  Oracle appreciates any contributions that are made by the open source community.
 
+## Attribution & Credits
+Initially, this project was created and distributed in [GitHub Oracle QuickStart space](https://github.com/oracle-quickstart/oci-arch-tomcat-autonomous). For that reason, we would like to thank all the involved contributors enlisted below:
+- Lukasz Feldman (https://github.com/lfeldman)
+- Orlando Gentil (https://github.com/oegentil)
+- Emmanuel Leroy (https://github.com/streamnsight) 
+- Flavio Pereira (https://github.com/flavio-santino)
+
 ## License
-Copyright (c) 2021 Oracle and/or its affiliates.
+Copyright (c) 2022 Oracle and/or its affiliates.
 
 Licensed under the Universal Permissive License (UPL), Version 1.0.
 

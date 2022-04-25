@@ -1,4 +1,4 @@
-## Copyright (c) 2021 Oracle and/or its affiliates.
+## Copyright (c) 2022 Oracle and/or its affiliates.
 ## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
 data "template_file" "key_script" {
@@ -67,7 +67,7 @@ resource "oci_core_instance" "tomcat-server" {
   create_vnic_details {
     subnet_id        = oci_core_subnet.vcn01_subnet_app01.id
     display_name     = "primaryvnic"
-    assign_public_ip = false
+    assign_public_ip = var.free_tier ? true : false
     nsg_ids          = [oci_core_network_security_group.SSHSecurityGroup.id, oci_core_network_security_group.APPSecurityGroup.id]
   }
 

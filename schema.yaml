@@ -1,4 +1,4 @@
-## Copyright (c) 2021 Oracle and/or its affiliates.
+## Copyright (c) 2022 Oracle and/or its affiliates.
 ## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
 title: "Create Apache Tomcat on Arm-based Ampere A1 compute connected to an autonomous database in Oracle Cloud Infrastructure,"
@@ -24,8 +24,7 @@ variableGroups:
   - compartment_ocid
   - availability_domain_name
   - atp_password
-  - atp_private_endpoint
-  - atp_free_tier
+  - free_tier
   - numberOfNodes
   - tomcat_version
   - use_bastion_service
@@ -75,6 +74,7 @@ variableGroups:
       and:
         - show_advanced
   variables:
+  - atp_private_endpoint
   - atp_cpu_core_count
   - atp_data_storage_size_in_tbs
   - atp_db_name
@@ -118,6 +118,14 @@ variables:
     visibile: true
     title: Region
     description: "Region where you want to deploy the resources defined by this stack."
+
+  free_tier:
+    type: boolean
+    visibile: true
+    default: true
+    required: false
+    title: "AlwaysFree/FreeTier"
+    description: "Check the box to deploy with Free Tier resources."
 
   atp_password:
     type: password
@@ -170,7 +178,7 @@ variables:
     type: enum
     title: "LoadBalancer Shape"
     description: "Choose LoadBalancer Shape"
-    default: "flexible"
+    default: "10Mbps-Micro"
     required: false 
     enum:
       - "flexible"
@@ -387,19 +395,11 @@ variables:
 
   atp_private_endpoint:
     type: boolean
-    visibile: true
     default: false
     required: true
     title: "ATP Database Private Endpoint"
     description: "Check the box to deploy ATP Database with Private Endpoint."
-
-  atp_free_tier:
-    type: boolean
-    visibile: true
-    default: true
-    required: false
-    title: "ATP Database Free Tier"
-    description: "Check the box to deploy ATP Database Free Tier."
+    visible: free_tier
 
   atp_cpu_core_count:
     type: number
@@ -471,6 +471,7 @@ variables:
     visible: 
       and:
         - ATP_private_endpoint
+        - free_tier
     default: "ATPPrivateEndpoint"
     title: "ATP Database Private Endpoint Label"
     description: "Choose ATP Database Private Endpoint label."

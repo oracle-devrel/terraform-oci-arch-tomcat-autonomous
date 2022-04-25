@@ -132,7 +132,7 @@ variables:
     required: true
     visibile: true
     title: "ATP Database Password for ADMIN user."
-    description: "ATP Database Password for ADMIN user."
+    description: "The password must start with a letter, and it can contain letters (uppercase, lowercase), numbers, and the symbols _ $ #"
     minLength: 12
     maxLength: 30
     pattern: ^[A-Za-z][A-Za-z0-9_#\$]+$ 

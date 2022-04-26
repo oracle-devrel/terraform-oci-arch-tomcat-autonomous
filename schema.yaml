@@ -160,12 +160,16 @@ variables:
 
   use_bastion_service:
     type: boolean
-    visibile: true
     default: false
     required: false
     title: "Use OCI Bastion Service"
     description: "Check the box to use OCI Bastion Service instead of Bastion Host VM."
- 
+    visible: 
+      and:   
+        - eq:
+          - free_tier
+          - false 
+          
   # Optional Configuration  
   
   ssh_public_key:

@@ -75,7 +75,7 @@ variable "vcn01_subnet_db01_display_name" {
 }
 
 variable "lb_shape" {
-  default = "10Mbps-Micro"
+  default = "flexible"
 }
 
 variable "flex_lb_min_shape" {
@@ -83,7 +83,7 @@ variable "flex_lb_min_shape" {
 }
 
 variable "flex_lb_max_shape" {
-  default = "100"
+  default = "10"
 }
 
 variable "InstanceShape" {

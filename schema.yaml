@@ -178,7 +178,7 @@ variables:
     type: enum
     title: "LoadBalancer Shape"
     description: "Choose LoadBalancer Shape"
-    default: "10Mbps-Micro"
+    default: "flexible"
     required: false 
     enum:
       - "flexible"
@@ -209,7 +209,7 @@ variables:
   flex_lb_max_shape:
     type: enum
     required: false
-    default: "100"
+    default: "10"
     title: "LB Flex Max Shape"
     description: "Choose Maximum Shape for Flex Load Balancer."
     enum:
@@ -355,7 +355,7 @@ variables:
     minimum: 1
     maximum: 128
     multipleOf: 1
-    default: 10
+    default: 6
     title: "Flex Shape Memory (GB)"
     description: "Choose number GB for Flex Shape Memory."
     visible:
@@ -399,7 +399,11 @@ variables:
     required: true
     title: "ATP Database Private Endpoint"
     description: "Check the box to deploy ATP Database with Private Endpoint."
-    visible: free_tier
+    visible: 
+      and:   
+        - eq:
+          - free_tier
+          - false   
 
   atp_cpu_core_count:
     type: number
@@ -470,8 +474,13 @@ variables:
     required: false
     visible: 
       and:
-        - ATP_private_endpoint
-        - free_tier
+        - eq:
+          - ATP_private_endpoint
+          - true     
+        - eq:
+          - free_tier
+          - false    
+
     default: "ATPPrivateEndpoint"
     title: "ATP Database Private Endpoint Label"
     description: "Choose ATP Database Private Endpoint label."

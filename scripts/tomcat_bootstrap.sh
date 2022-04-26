@@ -88,7 +88,7 @@ sudo -u tomcat nohup /u01/apache-tomcat-${tomcat_version}/bin/startup.sh &
 
 # Download TODOAPP and deploy in Tomcat
 echo '== 8. Download TODOAPP and deploy in Tomcat'
-wget -O /home/opc/todoapp.war https://github.com/oracle-quickstart/oci-arch-tomcat-autonomous/releases/latest/download/todoapp-atp.war
+wget -O /home/opc/todoapp.war https://github.com/oracle-devrel/terraform-oci-arch-tomcat-autonomous/releases/latest/download/todoapp-atp.war
 chown opc:opc /home/opc/todoapp.war
 cp /home/opc/todoapp.war /u01/apache-tomcat-${tomcat_version}/webapps
 chown tomcat:tomcat /u01/apache-tomcat-${tomcat_version}/webapps/todoapp.war

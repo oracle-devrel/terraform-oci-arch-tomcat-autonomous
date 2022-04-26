@@ -39,11 +39,11 @@ data "template_file" "tomcat_context_xml" {
 }
 
 resource "null_resource" "tomcat-server-config" {
-  depends_on = [oci_core_instance.tomcat-server, oci_database_autonomous_database.ATPdatabase]
+  depends_on = [oci_core_instance.tomcat-server, module.terraform-oci-arch-adb.adb_database]
   count      = var.numberOfNodes
 
   provisioner "local-exec" {
-    command = "echo '${oci_database_autonomous_database_wallet.atp_wallet.content}' >> ${var.atp_tde_wallet_zip_file}_encoded-${count.index}"
+    command = "echo '${module.terraform-oci-arch-adb.adb_database.adb_wallet_content}' >> ${var.atp_tde_wallet_zip_file}_encoded-${count.index}"
   }
 
   provisioner "local-exec" {

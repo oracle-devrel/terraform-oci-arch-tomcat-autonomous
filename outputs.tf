@@ -23,6 +23,6 @@ output "generated_ssh_private_key" {
 }
 
 output "wallet_password" {
-  value     = [random_password.wallet_password.result]
+  value     = [module.terraform-oci-arch-adb.adb_database.adb_wallet_content]
   sensitive = true
 }

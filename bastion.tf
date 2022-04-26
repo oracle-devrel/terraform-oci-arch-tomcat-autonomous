@@ -1,8 +1,13 @@
 ## Copyright (c) 2022 Oracle and/or its affiliates.
 ## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
+locals {
+  use_bastion_service = (var.free_tier == false && var.use_bastion_service == true) ? true : false 
+  use_bastion_host = (var.free_tier == false && var.use_bastion_service == false) ? true : false 
+}
+
 resource "oci_bastion_bastion" "bastion-service" {
-  count                        = var.use_bastion_service ? 1 : 0
+  count                        = local.use_bastion_service ? 1 : 0
   bastion_type                 = "STANDARD"
   compartment_id               = var.compartment_ocid
   target_subnet_id             = oci_core_subnet.vcn01_subnet_pub02.id
@@ -22,7 +27,7 @@ resource "oci_bastion_session" "ssh_via_bastion_service" {
     oci_core_network_security_group_security_rule.SSHSecurityIngressGroupRules
   ]
 
-  count      = var.use_bastion_service ? var.numberOfNodes : 0
+  count      = local.use_bastion_service ? var.numberOfNodes : 0
   bastion_id = oci_bastion_bastion.bastion-service[0].id
 
   key_details {
@@ -45,7 +50,7 @@ resource "oci_bastion_session" "ssh_via_bastion_service" {
 
 
 resource "oci_core_instance" "bastion_instance" {
-  count               = var.use_bastion_service ? 0 : 1
+  count               = local.use_bastion_host ? 1 : 0
   availability_domain = var.availability_domain_name == "" ? data.oci_identity_availability_domains.ADs.availability_domains[var.availability_domain_number]["name"] : var.availability_domain_name
   compartment_id      = var.compartment_ocid
   display_name        = "BastionVM"

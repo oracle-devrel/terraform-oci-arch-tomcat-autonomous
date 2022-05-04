@@ -3,7 +3,7 @@
 
 variable "release" {
   description = "Reference Architecture Release (OCI Architecture Center)"
-  default     = "1.5"
+  default     = "1.5.1"
 }
 
 variable "tenancy_ocid" {}

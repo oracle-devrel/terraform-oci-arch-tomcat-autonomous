@@ -27,6 +27,3 @@ output "wallet_password" {
   sensitive = true
 }
 
-output "homeregion" {
-  value = data.oci_identity_region_subscriptions.home_region_subscriptions.region_subscriptions[0].region_name
-}

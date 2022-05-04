@@ -26,3 +26,4 @@ output "wallet_password" {
   value     = [module.terraform-oci-arch-adb.adb_database.adb_wallet_content]
   sensitive = true
 }
+

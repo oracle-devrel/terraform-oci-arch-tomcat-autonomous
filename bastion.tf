@@ -2,8 +2,8 @@
 ## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
 locals {
-  use_bastion_service = (var.free_tier == false && var.use_bastion_service == true) ? true : false 
-  use_bastion_host = (var.free_tier == false && var.use_bastion_service == false) ? true : false 
+  use_bastion_service = (!var.free_tier && var.use_bastion_service) ? true : false 
+  use_bastion_host = (!var.free_tier && !var.use_bastion_service) ? true : false 
 }
 
 resource "oci_bastion_bastion" "bastion-service" {

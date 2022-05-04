@@ -39,7 +39,11 @@ data "template_file" "tomcat_context_xml" {
 }
 
 resource "null_resource" "tomcat_server_config_with_bastion" {
-  depends_on = [oci_core_instance.tomcat-server, module.terraform-oci-arch-adb.adb_database]
+  depends_on = [oci_core_instance.tomcat-server, 
+                module.terraform-oci-arch-adb.adb_database,
+                oci_bastion_session.ssh_via_bastion_service,
+                oci_core_instance.bastion_instance
+                ]
   count      = var.free_tier ? 0 : var.numberOfNodes
 
   provisioner "local-exec" {

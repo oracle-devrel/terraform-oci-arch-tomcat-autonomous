@@ -60,38 +60,6 @@ resource "oci_core_default_security_list" "vcn01_default_security_list" {
   defined_tags = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }
 
-resource "oci_core_security_list" "vcn01_db_security_list" {
-  compartment_id = var.compartment_ocid
-  vcn_id         = oci_core_vcn.vcn01.id
-  display_name   = "MDSSecureList"
-  egress_security_rules {
-    destination = "0.0.0.0/0"
-    protocol    = "all"
-  }
-  ingress_security_rules {
-    protocol = 6
-    source   = "0.0.0.0/0"
-
-    source_type = "CIDR_BLOCK"
-    tcp_options {
-      max = 3306
-      min = 3306
-    }
-  }
-  ingress_security_rules {
-    protocol = 6
-    source   = "0.0.0.0/0"
-
-    source_type = "CIDR_BLOCK"
-    tcp_options {
-      max = 33060
-      min = 33060
-    }
-  }
-  defined_tags = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
-}
-
-
 #vcn01 pub01 subnet
 resource "oci_core_subnet" "vcn01_subnet_pub01" {
   cidr_block     = var.vcn01_subnet_pub01_cidr_block
@@ -130,7 +98,6 @@ resource "oci_core_subnet" "vcn01_subnet_db01" {
   dns_label                  = "dbsubnet"
   vcn_id                     = oci_core_vcn.vcn01.id
   display_name               = var.vcn01_subnet_db01_display_name
-  security_list_ids          = [oci_core_security_list.vcn01_db_security_list.id]
   prohibit_public_ip_on_vnic = var.free_tier ? false : true
   route_table_id             = var.free_tier ? oci_core_route_table.vcn01_igw_route_table.id : oci_core_route_table.vcn01_nat_route_table[0].id
   defined_tags               = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }

@@ -25,6 +25,7 @@ variableGroups:
   - availability_domain_name
   - atp_password
   - free_tier
+  - atp_private_endpoint
   - numberOfNodes
   - tomcat_version
   - use_bastion_service
@@ -132,10 +133,10 @@ variables:
     required: true
     visibile: true
     title: "ATP Database Password for ADMIN user."
-    description: "The password must start with a letter, and it can contain letters (uppercase, lowercase), numbers, and the symbols _ $ #"
+    description: "The password must start with a letter, and it can contain letters (uppercase, lowercase), numbers, and the symbols _ $ # ($ symbol cannot be the last character)."
     minLength: 12
     maxLength: 30
-    pattern: ^[A-Za-z][A-Za-z0-9_#\$]+$ 
+    pattern: ^[A-Za-z][A-Za-z0-9_#\$]+[A-Za-z0-9_#]$ 
 
   numberOfNodes:
     type: number
@@ -399,7 +400,7 @@ variables:
 
   atp_private_endpoint:
     type: boolean
-    default: false
+    default: true
     required: true
     title: "ATP Database Private Endpoint"
     description: "Check the box to deploy ATP Database with Private Endpoint."

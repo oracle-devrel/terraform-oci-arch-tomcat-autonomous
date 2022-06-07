@@ -21,18 +21,6 @@ data "oci_core_images" "InstanceImageOCID" {
   }
 }
 
-data "oci_core_vnic_attachments" "tomcat-server_primaryvnic_attach" {
-  count               = var.numberOfNodes
-  availability_domain = var.availability_domain_name == "" ? data.oci_identity_availability_domains.ADs.availability_domains[0]["name"] : var.availability_domain_name
-  compartment_id      = var.compartment_ocid
-  instance_id         = oci_core_instance.tomcat-server[count.index].id
-}
-
-data "oci_core_vnic" "tomcat-server_primaryvnic" {
-  count   = var.numberOfNodes
-  vnic_id = data.oci_core_vnic_attachments.tomcat-server_primaryvnic_attach[count.index].vnic_attachments.0.vnic_id
-}
-
 data "oci_identity_region_subscriptions" "home_region_subscriptions" {
   tenancy_id = var.tenancy_ocid
 

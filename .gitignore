@@ -1,4 +1,5 @@
 # General
+.DS_Store
 **/.DS_Store
 .AppleDouble
 .LSOverride
@@ -39,7 +40,7 @@ Temporary Items
 .apdisk
 
 # ignore common security keys
-*.key
-*.crt
-*.csr
-*.pem
+.key
+.crt
+.csr
+.pem

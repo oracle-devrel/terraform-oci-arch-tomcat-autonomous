@@ -6,7 +6,7 @@
 resource "oci_core_network_security_group" "ATPSecurityGroup" {
   compartment_id = var.compartment_ocid
   display_name   = "ATPSecurityGroup"
-  vcn_id         = oci_core_vcn.vcn01.id
+  vcn_id         = oci_core_vcn.tomcat_atp_vcn.id
   defined_tags   = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }
 
@@ -42,7 +42,7 @@ resource "oci_core_network_security_group_security_rule" "ATPSecurityIngressGrou
 
 resource "oci_core_network_security_group" "SSHSecurityGroup" {
   compartment_id = var.compartment_ocid
-  vcn_id         = oci_core_vcn.vcn01.id
+  vcn_id         = oci_core_vcn.tomcat_atp_vcn.id
   display_name   = "Bastion_NSG"
   defined_tags   = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }
@@ -77,7 +77,7 @@ resource "oci_core_network_security_group_security_rule" "SSHSecurityIngressGrou
 
 resource "oci_core_network_security_group" "LBSecurityGroup" {
   compartment_id = var.compartment_ocid
-  vcn_id         = oci_core_vcn.vcn01.id
+  vcn_id         = oci_core_vcn.tomcat_atp_vcn.id
   display_name   = "LB_NSG"
   defined_tags   = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }
@@ -127,7 +127,7 @@ resource "oci_core_network_security_group_security_rule" "LBSecurityIngressGroup
 
 resource "oci_core_network_security_group" "APPSecurityGroup" {
   compartment_id = var.compartment_ocid
-  vcn_id         = oci_core_vcn.vcn01.id
+  vcn_id         = oci_core_vcn.tomcat_atp_vcn.id
   display_name   = "APP_NSG"
   defined_tags   = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }

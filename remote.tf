@@ -2,258 +2,180 @@
 ## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
 
-data "template_file" "tomcat_service_template" {
-  count    = var.numberOfNodes
-  template = file("./scripts/tomcat.service")
-
+data "template_file" "create_app_user_oracle_sh_template" {
+  template = file("${path.module}/scripts/create_app_user_oracle.sh")
   vars = {
-    tomcat_version = var.tomcat_version
+    oci_adb_admin_username              = "admin"
+    oci_adb_admin_password              = var.atp_password
+    oci_adb_db_name                     = var.atp_db_name
+    oracle_instant_client_version_short = var.oracle_instant_client_version_short
   }
 }
 
-data "template_file" "tomcat_template" {
+data "template_file" "create_app_user_oracle_sql_template" {
+  template = file("${path.module}/sqls/create_app_user_oracle.sql")
+  vars = {
+    oci_adb_username                    = var.atp_username
+    oci_adb_password                    = var.atp_password
+  }
+}
+
+data "template_file" "create_app_tables_oracle_sh_template" {
+  template = file("${path.module}/scripts/create_app_tables_oracle.sh")
+  vars = {
+    oci_adb_username                    = var.atp_username
+    oci_adb_password                    = var.atp_password
+    oci_adb_db_name                     = var.atp_db_name
+    oracle_instant_client_version_short = var.oracle_instant_client_version_short
+  }
+}
+
+data "template_file" "create_app_tables_oracle_sql_template" {
+  template = file("${path.module}/sqls/create_app_tables_oracle.sql")
+  vars = {
+    oci_adb_username                    = var.atp_username
+    oci_adb_password                    = var.atp_password
+  }
+}
+
+resource "null_resource" "adb_sql_exec" {
+  depends_on = [module.oci-arch-tomcat.oci-arch-tomcat, module.oci-arch-adb.adb_database]
+
+
+  provisioner "file" {
+    connection {
+      type                = "ssh"
+      user                = "opc"
+      host                = module.oci-arch-tomcat.tomcat_nodes_private_ips[0]
+      private_key         = module.oci-arch-tomcat.generated_ssh_private_key
+      script_path         = "/home/opc/myssh.sh"
+      agent               = false
+      timeout             = "10m"
+      bastion_host        = var.use_bastion_service ? "host.bastion.${var.region}.oci.oraclecloud.com" : oci_core_instance.bastion_instance[0].public_ip
+      bastion_port        = "22"
+      bastion_user        = var.use_bastion_service ? module.oci-arch-tomcat.bastion_session_ids[0] : "opc"
+      bastion_private_key = var.use_bastion_service ? module.oci-arch-tomcat.generated_ssh_private_key : tls_private_key.public_private_key_pair.private_key_pem
+    }
+    content     = data.template_file.create_app_user_oracle_sh_template.rendered
+    destination = "/home/opc/create_app_user_oracle.sh"
+  }
+
+  provisioner "file" {
+    connection {
+      type                = "ssh"
+      user                = "opc"
+      host                = module.oci-arch-tomcat.tomcat_nodes_private_ips[0]
+      private_key         = module.oci-arch-tomcat.generated_ssh_private_key
+      script_path         = "/home/opc/myssh.sh"
+      agent               = false
+      timeout             = "10m"
+      bastion_host        = var.use_bastion_service ? "host.bastion.${var.region}.oci.oraclecloud.com" : oci_core_instance.bastion_instance[0].public_ip
+      bastion_port        = "22"
+      bastion_user        = var.use_bastion_service ? module.oci-arch-tomcat.bastion_session_ids[0] : "opc"
+      bastion_private_key = var.use_bastion_service ? module.oci-arch-tomcat.generated_ssh_private_key : tls_private_key.public_private_key_pair.private_key_pem
+    }
+    content     = data.template_file.create_app_user_oracle_sql_template.rendered
+    destination = "/home/opc/create_app_user_oracle.sql"
+  }
+
+  provisioner "file" {
+    connection {
+      type                = "ssh"
+      user                = "opc"
+      host                = module.oci-arch-tomcat.tomcat_nodes_private_ips[0]
+      private_key         = module.oci-arch-tomcat.generated_ssh_private_key
+      script_path         = "/home/opc/myssh.sh"
+      agent               = false
+      timeout             = "10m"
+      bastion_host        = var.use_bastion_service ? "host.bastion.${var.region}.oci.oraclecloud.com" : oci_core_instance.bastion_instance[0].public_ip
+      bastion_port        = "22"
+      bastion_user        = var.use_bastion_service ? module.oci-arch-tomcat.bastion_session_ids[0] : "opc"
+      bastion_private_key = var.use_bastion_service ? module.oci-arch-tomcat.generated_ssh_private_key : tls_private_key.public_private_key_pair.private_key_pem
+    }
+    content     = data.template_file.create_app_tables_oracle_sh_template.rendered
+    destination = "/home/opc/create_app_tables_oracle.sh"
+  }
+
+  provisioner "file" {
+    connection {
+      type                = "ssh"
+      user                = "opc"
+      host                = module.oci-arch-tomcat.tomcat_nodes_private_ips[0]
+      private_key         = module.oci-arch-tomcat.generated_ssh_private_key
+      script_path         = "/home/opc/myssh.sh"
+      agent               = false
+      timeout             = "10m"
+      bastion_host        = var.use_bastion_service ? "host.bastion.${var.region}.oci.oraclecloud.com" : oci_core_instance.bastion_instance[0].public_ip 
+      bastion_port        = "22"
+      bastion_user        = var.use_bastion_service ? module.oci-arch-tomcat.bastion_session_ids[0] : "opc"
+      bastion_private_key = var.use_bastion_service ? module.oci-arch-tomcat.generated_ssh_private_key : tls_private_key.public_private_key_pair.private_key_pem
+    }
+    content     = data.template_file.create_app_tables_oracle_sql_template.rendered
+    destination = "/home/opc/create_app_tables_oracle.sql"
+  }
+
+  provisioner "remote-exec" {
+    connection {
+      type                = "ssh"
+      user                = "opc"
+      host                = module.oci-arch-tomcat.tomcat_nodes_private_ips[0]
+      private_key         = module.oci-arch-tomcat.generated_ssh_private_key
+      script_path         = "/home/opc/myssh.sh"
+      agent               = false
+      timeout             = "10m"
+      bastion_host        = var.use_bastion_service ? "host.bastion.${var.region}.oci.oraclecloud.com" : oci_core_instance.bastion_instance[0].public_ip
+      bastion_port        = "22"
+      bastion_user        = var.use_bastion_service ? module.oci-arch-tomcat.bastion_session_ids[0] : "opc"
+      bastion_private_key = var.use_bastion_service ? module.oci-arch-tomcat.generated_ssh_private_key : tls_private_key.public_private_key_pair.private_key_pem
+    }
+    inline = [
+      "echo '--> Running create_app_user_oracle.sh...'",
+      "more /home/opc/create_app_user_oracle.sh",
+      "chmod +x /home/opc/create_app_user_oracle.sh",
+      "sudo /home/opc/create_app_user_oracle.sh",
+      "echo '-[100%]-> create_app_user_oracle.sh finished.'",
+      "echo '--> Running create_app_tables_oracle.sh...'",
+      "more /home/opc/create_app_tables_oracle.sh",
+      "chmod +x /home/opc/create_app_tables_oracle.sh",
+      "sudo /home/opc/create_app_tables_oracle.sh",
+      "echo '-[100%]-> create_app_tables_oracle.sh finished.'"
+    ]
+  }
+
+}
+
+resource "null_resource" "app_deployment" {
+  depends_on = [null_resource.adb_sql_exec]
+
   count = var.numberOfNodes
 
-  template = file("./scripts/tomcat_bootstrap.sh")
-  vars = {
-    db_name                             = var.atp_db_name
-    db_user_name                        = var.atp_username
-    db_user_password                    = var.atp_password
-    tde_wallet_zip_file                 = var.atp_tde_wallet_zip_file
-    oracle_instant_client_version       = var.oracle_instant_client_version
-    oracle_instant_client_version_short = var.oracle_instant_client_version_short
-    tomcat_host                         = "tomcat-server-${count.index}"
-    tomcat_version                      = var.tomcat_version
-    tomcat_major_release                = split(".", var.tomcat_version)[0]
-  }
-}
-
-data "template_file" "tomcat_context_xml" {
-  template = file("./java/context.xml")
-  vars = {
-    db_name                             = var.atp_db_name
-    db_user_name                        = var.atp_username
-    db_user_password                    = var.atp_password
-    oracle_instant_client_version_short = var.oracle_instant_client_version_short
-  }
-}
-
-resource "null_resource" "tomcat_server_config_with_bastion" {
-  depends_on = [oci_core_instance.tomcat-server, 
-                module.terraform-oci-arch-adb.adb_database,
-                oci_bastion_session.ssh_via_bastion_service,
-                oci_core_instance.bastion_instance
-                ]
-  count      = var.free_tier ? 0 : var.numberOfNodes
-
-  provisioner "local-exec" {
-    command = "echo '${module.terraform-oci-arch-adb.adb_database.adb_wallet_content}' >> ${var.atp_tde_wallet_zip_file}_encoded-${count.index}"
-  }
-
-  provisioner "local-exec" {
-    command = "base64 --decode ${var.atp_tde_wallet_zip_file}_encoded-${count.index} > ${var.atp_tde_wallet_zip_file}-${count.index}"
-  }
-
-  provisioner "local-exec" {
-    command = "rm -rf ${var.atp_tde_wallet_zip_file}_encoded-${count.index}"
-  }
-
-  provisioner "file" {
-    connection {
-      type                = "ssh"
-      user                = "opc"
-      host                = data.oci_core_vnic.tomcat-server_primaryvnic[count.index].private_ip_address
-      private_key         = tls_private_key.public_private_key_pair.private_key_pem
-      script_path         = "/home/opc/myssh.sh"
-      agent               = false
-      timeout             = "10m"
-      bastion_host        = var.use_bastion_service ? "host.bastion.${var.region}.oci.oraclecloud.com" : oci_core_instance.bastion_instance[0].public_ip
-      bastion_port        = "22"
-      bastion_user        = var.use_bastion_service ? oci_bastion_session.ssh_via_bastion_service[count.index].id : "opc"
-      bastion_private_key = tls_private_key.public_private_key_pair.private_key_pem
-    }
-    source      = "${var.atp_tde_wallet_zip_file}-${count.index}"
-    destination = "/tmp/${var.atp_tde_wallet_zip_file}"
-  }
-
-  provisioner "local-exec" {
-    command = "rm -rf ${var.atp_tde_wallet_zip_file}-${count.index}"
-  }
-
-  provisioner "file" {
-    connection {
-      type                = "ssh"
-      user                = "opc"
-      host                = data.oci_core_vnic.tomcat-server_primaryvnic[count.index].private_ip_address
-      private_key         = tls_private_key.public_private_key_pair.private_key_pem
-      script_path         = "/home/opc/myssh.sh"
-      agent               = false
-      timeout             = "10m"
-      bastion_host        = var.use_bastion_service ? "host.bastion.${var.region}.oci.oraclecloud.com" : oci_core_instance.bastion_instance[0].public_ip
-      bastion_port        = "22"
-      bastion_user        = var.use_bastion_service ? oci_bastion_session.ssh_via_bastion_service[count.index].id : "opc"
-      bastion_private_key = tls_private_key.public_private_key_pair.private_key_pem
-    }
-
-    content     = data.template_file.tomcat_template[count.index].rendered
-    destination = "/home/opc/tomcat_bootstrap.sh"
-  }
-
-  provisioner "file" {
-    connection {
-      type                = "ssh"
-      user                = "opc"
-      host                = data.oci_core_vnic.tomcat-server_primaryvnic[count.index].private_ip_address
-      private_key         = tls_private_key.public_private_key_pair.private_key_pem
-      script_path         = "/home/opc/myssh.sh"
-      agent               = false
-      timeout             = "10m"
-      bastion_host        = var.use_bastion_service ? "host.bastion.${var.region}.oci.oraclecloud.com" : oci_core_instance.bastion_instance[0].public_ip
-      bastion_port        = "22"
-      bastion_user        = var.use_bastion_service ? oci_bastion_session.ssh_via_bastion_service[count.index].id : "opc"
-      bastion_private_key = tls_private_key.public_private_key_pair.private_key_pem
-    }
-
-    content     = data.template_file.tomcat_service_template[count.index].rendered
-    destination = "/home/opc/tomcat.service"
-  }
-
-  provisioner "file" {
-    connection {
-      type                = "ssh"
-      user                = "opc"
-      host                = data.oci_core_vnic.tomcat-server_primaryvnic[count.index].private_ip_address
-      private_key         = tls_private_key.public_private_key_pair.private_key_pem
-      script_path         = "/home/opc/myssh.sh"
-      agent               = false
-      timeout             = "10m"
-      bastion_host        = var.use_bastion_service ? "host.bastion.${var.region}.oci.oraclecloud.com" : oci_core_instance.bastion_instance[0].public_ip
-      bastion_port        = "22"
-      bastion_user        = var.use_bastion_service ? oci_bastion_session.ssh_via_bastion_service[count.index].id : "opc"
-      bastion_private_key = tls_private_key.public_private_key_pair.private_key_pem
-    }
-
-    content     = data.template_file.tomcat_context_xml.rendered
-    destination = "~/context.xml"
-  }
-
   provisioner "remote-exec" {
     connection {
       type                = "ssh"
       user                = "opc"
-      host                = data.oci_core_vnic.tomcat-server_primaryvnic[count.index].private_ip_address
-      private_key         = tls_private_key.public_private_key_pair.private_key_pem
+      host                = module.oci-arch-tomcat.tomcat_nodes_private_ips[count.index]
+      private_key         = module.oci-arch-tomcat.generated_ssh_private_key
       script_path         = "/home/opc/myssh.sh"
       agent               = false
       timeout             = "10m"
-      bastion_host        = var.use_bastion_service ? "host.bastion.${var.region}.oci.oraclecloud.com" : oci_core_instance.bastion_instance[0].public_ip
+      bastion_host        = var.use_bastion_service ? "host.bastion.${var.region}.oci.oraclecloud.com" : oci_core_instance.bastion_instance[0].public_ip 
       bastion_port        = "22"
-      bastion_user        = var.use_bastion_service ? oci_bastion_session.ssh_via_bastion_service[count.index].id : "opc"
-      bastion_private_key = tls_private_key.public_private_key_pair.private_key_pem
-
+      bastion_user        = var.use_bastion_service ? module.oci-arch-tomcat.bastion_session_ids[count.index] : "opc"
+      bastion_private_key = var.use_bastion_service ? module.oci-arch-tomcat.generated_ssh_private_key : tls_private_key.public_private_key_pair.private_key_pem
     }
     inline = [
-      "chmod +x ~/tomcat_bootstrap.sh",
-      "sudo ~/tomcat_bootstrap.sh"
+      "echo '--> Downloading todoapp-atp.war ...'",
+      "wget -O /home/opc/todoapp.war https://github.com/oracle-devrel/terraform-oci-arch-tomcat-autonomous/releases/latest/download/todoapp-atp.war",
+      "sudo chown opc:opc /home/opc/todoapp.war",
+      "echo '-[100%]-> todoapp-atp.war downloaded.'",
+      "echo '--> Deploying todoapp-atp.war ...'",      
+      "sudo cp /home/opc/todoapp.war /u01/apache-tomcat-${var.tomcat_version}/webapps",
+      "sudo chown tomcat:tomcat /u01/apache-tomcat-${var.tomcat_version}/webapps/todoapp.war",
+      "sleep 30",
+      "echo '-[100%]-> todoapp-atp.war deployed.'"
     ]
   }
 
 }
 
-resource "null_resource" "tomcat_server_config_without_bastion" {
-  depends_on = [oci_core_instance.tomcat-server, module.terraform-oci-arch-adb.adb_database]
-  count      = var.free_tier ? var.numberOfNodes : 0 
-
-  provisioner "local-exec" {
-    command = "echo '${module.terraform-oci-arch-adb.adb_database.adb_wallet_content}' >> ${var.atp_tde_wallet_zip_file}_encoded-${count.index}"
-  }
-
-  provisioner "local-exec" {
-    command = "base64 --decode ${var.atp_tde_wallet_zip_file}_encoded-${count.index} > ${var.atp_tde_wallet_zip_file}-${count.index}"
-  }
-
-  provisioner "local-exec" {
-    command = "rm -rf ${var.atp_tde_wallet_zip_file}_encoded-${count.index}"
-  }
-
-  provisioner "file" {
-    connection {
-      type                = "ssh"
-      user                = "opc"
-      host                = data.oci_core_vnic.tomcat-server_primaryvnic[count.index].public_ip_address
-      private_key         = tls_private_key.public_private_key_pair.private_key_pem
-      script_path         = "/home/opc/myssh.sh"
-      agent               = false
-      timeout             = "10m"
-    }
-    source      = "${var.atp_tde_wallet_zip_file}-${count.index}"
-    destination = "/tmp/${var.atp_tde_wallet_zip_file}"
-  }
-
-  provisioner "local-exec" {
-    command = "rm -rf ${var.atp_tde_wallet_zip_file}-${count.index}"
-  }
-
-  provisioner "file" {
-    connection {
-      type                = "ssh"
-      user                = "opc"
-      host                = data.oci_core_vnic.tomcat-server_primaryvnic[count.index].public_ip_address
-      private_key         = tls_private_key.public_private_key_pair.private_key_pem
-      script_path         = "/home/opc/myssh.sh"
-      agent               = false
-      timeout             = "10m"
-    }
-
-    content     = data.template_file.tomcat_template[count.index].rendered
-    destination = "/home/opc/tomcat_bootstrap.sh"
-  }
-
-  provisioner "file" {
-    connection {
-      type                = "ssh"
-      user                = "opc"
-      host                = data.oci_core_vnic.tomcat-server_primaryvnic[count.index].public_ip_address
-      private_key         = tls_private_key.public_private_key_pair.private_key_pem
-      script_path         = "/home/opc/myssh.sh"
-      agent               = false
-      timeout             = "10m"
-    }
-
-    content     = data.template_file.tomcat_service_template[count.index].rendered
-    destination = "/home/opc/tomcat.service"
-  }
-
-  provisioner "file" {
-    connection {
-      type                = "ssh"
-      user                = "opc"
-      host                = data.oci_core_vnic.tomcat-server_primaryvnic[count.index].public_ip_address
-      private_key         = tls_private_key.public_private_key_pair.private_key_pem
-      script_path         = "/home/opc/myssh.sh"
-      agent               = false
-      timeout             = "10m"
-    }
-
-    content     = data.template_file.tomcat_context_xml.rendered
-    destination = "~/context.xml"
-  }
-
-  provisioner "remote-exec" {
-    connection {
-      type                = "ssh"
-      user                = "opc"
-      host                = data.oci_core_vnic.tomcat-server_primaryvnic[count.index].public_ip_address
-      private_key         = tls_private_key.public_private_key_pair.private_key_pem
-      script_path         = "/home/opc/myssh.sh"
-      agent               = false
-      timeout             = "10m"
-    }
-    inline = [
-      "chmod +x ~/tomcat_bootstrap.sh",
-      "sudo ~/tomcat_bootstrap.sh"
-    ]
-  }
-
-}
 

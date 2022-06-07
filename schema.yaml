@@ -231,7 +231,6 @@ variables:
     pattern: "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\/(3[0-2]|[1-2]?[0-9])$"
     title: "VCN CIDR Block"
     description: "Choose CIDR block for your VCN."
-    default: "10.0.0.0/16"
 
   tomcat_atp_vcn_display_name:
     type: string
@@ -246,7 +245,6 @@ variables:
     pattern: "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\/(3[0-2]|[1-2]?[0-9])$"
     title: "Load Balancer Public Subnet CIDR Block"
     description: "Choose CIDR block for your Load Balancer Public Subnet."
-    default: "10.0.1.0/24"
 
   tomcat_atp_vcn_subnet_lb_display_name:
     type: string
@@ -275,7 +273,6 @@ variables:
     pattern: "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\/(3[0-2]|[1-2]?[0-9])$"
     title: "Bastion Host Public Subnet CIDR Block"
     description: "Choose CIDR block for your Bastion Host Public Subnet."
-    default: "10.0.2.0/24"
 
   tomcat_atp_vcn_subnet_bastion_display_name:
     type: string
@@ -290,7 +287,6 @@ variables:
     pattern: "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\/(3[0-2]|[1-2]?[0-9])$"
     title: "Tomcat Servers Public Subnet CIDR Block"
     description: "Choose CIDR block for your Tomcat Servers Public Subnet."
-    default: "10.0.10.0/24"
 
   tomcat_atp_vcn_subnet_app_display_name:
     type: string
@@ -305,7 +301,6 @@ variables:
     pattern: "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\/(3[0-2]|[1-2]?[0-9])$"
     title: "ATP Private Subnet CIDR Block"
     description: "Choose CIDR block for your ATP Private Subnet."
-    default: "10.0.20.0/24"
     visible: atp_private_endpoint
 
   tomcat_atp_vcn_subnet_db_display_name:

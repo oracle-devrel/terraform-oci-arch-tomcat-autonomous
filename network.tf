@@ -1,105 +1,166 @@
 ## Copyright (c) 2022 Oracle and/or its affiliates.
 ## All rights reserved. The Universal Permissive License (UPL), Version 1.0 as shown at http://oss.oracle.com/licenses/upl
 
-resource "oci_core_vcn" "vcn01" {
-  cidr_block     = var.vcn01_cidr_block
-  dns_label      = var.vcn01_dns_label
+resource "oci_core_vcn" "tomcat_atp_vcn" {
+  cidr_block     = var.tomcat_atp_vcn_cidr_block
   compartment_id = var.compartment_ocid
-  display_name   = var.vcn01_display_name
+  display_name   = var.tomcat_atp_vcn_display_name
+  dns_label      = "tomvcn"
   defined_tags   = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }
 
-resource "oci_core_internet_gateway" "vcn01_internet_gateway" {
+resource "oci_core_internet_gateway" "tomcat_atp_vcn_internet_gateway" {
   compartment_id = var.compartment_ocid
-  vcn_id         = oci_core_vcn.vcn01.id
+  vcn_id         = oci_core_vcn.tomcat_atp_vcn.id
   enabled        = "true"
-  display_name   = "IGW_vcn01"
+  display_name   = "tomcat_atp_vcn_igw"
   defined_tags   = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }
 
-resource "oci_core_nat_gateway" "vcn01_nat_gateway" {
+resource "oci_core_nat_gateway" "tomcat_atp_vcn_nat_gateway" {
   count          = var.free_tier ? 0 : 1
   compartment_id = var.compartment_ocid
-  vcn_id         = oci_core_vcn.vcn01.id
-  display_name   = "NAT_GW_vcn01"
+  vcn_id         = oci_core_vcn.tomcat_atp_vcn.id
+  display_name   = "tomcat_atp_vcn_nat"
   defined_tags   = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }
 
-resource "oci_core_route_table" "vcn01_igw_route_table" {
+resource "oci_core_route_table" "tomcat_atp_vcn_igw_route_table" {
   compartment_id = var.compartment_ocid
-  vcn_id         = oci_core_vcn.vcn01.id
-  display_name   = "IGW_RT"
+  vcn_id         = oci_core_vcn.tomcat_atp_vcn.id
+  display_name   = "tomcat_atp_vcn_igw_route_table"
   route_rules {
-    network_entity_id = oci_core_internet_gateway.vcn01_internet_gateway.id
+    network_entity_id = oci_core_internet_gateway.tomcat_atp_vcn_internet_gateway.id
     destination       = "0.0.0.0/0"
     destination_type  = "CIDR_BLOCK"
   }
   defined_tags = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }
 
-resource "oci_core_route_table" "vcn01_nat_route_table" {
+resource "oci_core_route_table" "tomcat_atp_vcn_nat_route_table" {
   count          = var.free_tier ? 0 : 1
   compartment_id = var.compartment_ocid
-  vcn_id         = oci_core_vcn.vcn01.id
-  display_name   = "NAT_RT"
+  vcn_id         = oci_core_vcn.tomcat_atp_vcn.id
+  display_name   = "tomcat_atp_vcn_nat_route_table"
   route_rules {
-    network_entity_id = oci_core_nat_gateway.vcn01_nat_gateway[count.index].id
+    network_entity_id = oci_core_nat_gateway.tomcat_atp_vcn_nat_gateway[count.index].id
     destination       = "0.0.0.0/0"
     destination_type  = "CIDR_BLOCK"
   }
   defined_tags = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }
 
-#Default security list
-resource "oci_core_default_security_list" "vcn01_default_security_list" {
-  manage_default_resource_id = oci_core_vcn.vcn01.default_security_list_id
+resource "oci_core_security_list" "ssh_security_list" {
+  compartment_id = var.compartment_ocid
+  display_name   = "ssh_security_list"
+  vcn_id         = oci_core_vcn.tomcat_atp_vcn.id
   egress_security_rules {
     destination = "0.0.0.0/0"
-    protocol    = "all"
+    protocol    = "6"
   }
-  defined_tags = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
+  ingress_security_rules {
+    tcp_options {
+      max = 22
+      min = 22
+    }
+    protocol = "6"
+    source   = "0.0.0.0/0"
+  }
 }
 
-#vcn01 pub01 subnet
-resource "oci_core_subnet" "vcn01_subnet_pub01" {
-  cidr_block     = var.vcn01_subnet_pub01_cidr_block
+resource "oci_core_security_list" "lb_http_security_list" {
   compartment_id = var.compartment_ocid
-  vcn_id         = oci_core_vcn.vcn01.id
-  display_name   = var.vcn01_subnet_pub01_display_name
-  route_table_id = oci_core_route_table.vcn01_igw_route_table.id 
+  display_name   = "lb_http_security_list"
+  vcn_id         = oci_core_vcn.tomcat_atp_vcn.id
+  egress_security_rules {
+    destination = "0.0.0.0/0"
+    protocol    = "6"
+  }
+  ingress_security_rules {
+    tcp_options {
+      max = 80
+      min = 80
+    }
+    protocol = "6"
+    source   = "0.0.0.0/0"
+  }
+}
+
+resource "oci_core_security_list" "tomcat_http_security_list" {
+  compartment_id = var.compartment_ocid
+  display_name   = "tomcat_http_security_list"
+  vcn_id         = oci_core_vcn.tomcat_atp_vcn.id
+  egress_security_rules {
+    destination = "0.0.0.0/0"
+    protocol    = "6"
+  }
+  ingress_security_rules {
+    tcp_options {
+      max = 8080
+      min = 8080
+    }
+    protocol = "6"
+    source   = "0.0.0.0/0"
+  }
+}
+
+#tomcat_atp_vcn lb subnet
+resource "oci_core_subnet" "tomcat_atp_vcn_subnet_lb" {
+  cidr_block        = var.tomcat_atp_vcn_subnet_lb_cidr_block
+  compartment_id    = var.compartment_ocid
+  vcn_id            = oci_core_vcn.tomcat_atp_vcn.id
+  dns_label         = "lbsub"
+  display_name      = var.tomcat_atp_vcn_subnet_lb_display_name
+  security_list_ids = [oci_core_security_list.lb_http_security_list.id]
+  route_table_id    = oci_core_route_table.tomcat_atp_vcn_igw_route_table.id 
+  defined_tags      = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
+}
+
+#tomcat_atp_vcn bastion subnet
+resource "oci_core_subnet" "tomcat_atp_vcn_subnet_bastion" {
+  cidr_block     = var.tomcat_atp_vcn_subnet_bastion_cidr_block
+  compartment_id = var.compartment_ocid
+  vcn_id         = oci_core_vcn.tomcat_atp_vcn.id
+  dns_label      = "bassub"
+  display_name   = var.tomcat_atp_vcn_subnet_bastion_display_name
+  route_table_id = oci_core_route_table.tomcat_atp_vcn_igw_route_table.id 
   defined_tags   = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }
 
-#vcn01 pub02 subnet
-resource "oci_core_subnet" "vcn01_subnet_pub02" {
-  cidr_block     = var.vcn01_subnet_pub02_cidr_block
-  compartment_id = var.compartment_ocid
-  vcn_id         = oci_core_vcn.vcn01.id
-  display_name   = var.vcn01_subnet_pub02_display_name
-  route_table_id = oci_core_route_table.vcn01_igw_route_table.id 
-  defined_tags   = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
-}
-
-#vcn01 app01 subnet
-resource "oci_core_subnet" "vcn01_subnet_app01" {
-  cidr_block                 = var.vcn01_subnet_app01_cidr_block
+#tomcat_atp_vcn app01 subnet
+resource "oci_core_subnet" "tomcat_atp_vcn_subnet_app" {
+  cidr_block                 = var.tomcat_atp_vcn_subnet_app_cidr_block
   compartment_id             = var.compartment_ocid
-  vcn_id                     = oci_core_vcn.vcn01.id
-  display_name               = var.vcn01_subnet_app01_display_name
+  vcn_id                     = oci_core_vcn.tomcat_atp_vcn.id
+  dns_label                  = "tomsub"
+  display_name               = var.tomcat_atp_vcn_subnet_app_display_name
+  security_list_ids          = [oci_core_security_list.ssh_security_list.id, oci_core_security_list.tomcat_http_security_list.id]
   prohibit_public_ip_on_vnic = var.free_tier ? false : true
-  route_table_id             = var.free_tier ? oci_core_route_table.vcn01_igw_route_table.id : oci_core_route_table.vcn01_nat_route_table[0].id
+  route_table_id             = var.free_tier ? oci_core_route_table.tomcat_atp_vcn_igw_route_table.id : oci_core_route_table.tomcat_atp_vcn_nat_route_table[0].id
   defined_tags               = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }
 
-#vcn01 db01 subnet
-resource "oci_core_subnet" "vcn01_subnet_db01" {
-  cidr_block                 = var.vcn01_subnet_db01_cidr_block
+#tomcat_atp_vcn fss subnet
+resource "oci_core_subnet" "tomcat_atp_vcn_subnet_fss" {
+  cidr_block                 = var.tomcat_atp_vcn_subnet_fss_cidr_block
   compartment_id             = var.compartment_ocid
-  dns_label                  = "dbsubnet"
-  vcn_id                     = oci_core_vcn.vcn01.id
-  display_name               = var.vcn01_subnet_db01_display_name
+  vcn_id                     = oci_core_vcn.tomcat_atp_vcn.id
+  dns_label                  = "fsssub"
+  display_name               = var.tomcat_atp_vcn_subnet_fss_display_name
   prohibit_public_ip_on_vnic = var.free_tier ? false : true
-  route_table_id             = var.free_tier ? oci_core_route_table.vcn01_igw_route_table.id : oci_core_route_table.vcn01_nat_route_table[0].id
+  route_table_id             = var.free_tier ? oci_core_route_table.tomcat_atp_vcn_igw_route_table.id : oci_core_route_table.tomcat_atp_vcn_nat_route_table[0].id
+  defined_tags               = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
+}
+
+#tomcat_atp_vcn db subnet
+resource "oci_core_subnet" "tomcat_atp_vcn_subnet_db" {
+  cidr_block                 = var.tomcat_atp_vcn_subnet_db_cidr_block
+  compartment_id             = var.compartment_ocid
+  vcn_id                     = oci_core_vcn.tomcat_atp_vcn.id
+  dns_label                  = "dbsub"
+  display_name               = var.tomcat_atp_vcn_subnet_db_display_name
+  prohibit_public_ip_on_vnic = var.free_tier ? false : true
+  route_table_id             = var.free_tier ? oci_core_route_table.tomcat_atp_vcn_igw_route_table.id : oci_core_route_table.tomcat_atp_vcn_nat_route_table[0].id
   defined_tags               = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }
 

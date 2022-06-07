@@ -3,7 +3,7 @@
 
 variable "release" {
   description = "Reference Architecture Release (OCI Architecture Center)"
-  default     = "1.5.2"
+  default     = "1.6"
 }
 
 variable "tenancy_ocid" {}
@@ -12,9 +12,11 @@ variable "compartment_ocid" {}
 variable "fingerprint" {}
 variable "user_ocid" {}
 variable "private_key_path" {}
+
 variable "availability_domain_name" {
   default = ""
 }
+
 variable "availability_domain_number" {
   default = 0
 }
@@ -28,50 +30,52 @@ variable "use_bastion_service" {
   default = false
 }
 
-variable "igw_display_name" {
-  default = "internet-gateway"
-}
-
-variable "vcn01_cidr_block" {
+variable "tomcat_atp_vcn_cidr_block" {
   default = "10.0.0.0/16"
 }
-variable "vcn01_dns_label" {
-  default = "vcn01"
-}
-variable "vcn01_display_name" {
-  default = "vcn01"
+
+variable "tomcat_atp_vcn_display_name" {
+  default = "tomcat_atp_vcn"
 }
 
-variable "vcn01_subnet_pub01_cidr_block" {
+variable "tomcat_atp_vcn_subnet_lb_cidr_block" {
   default = "10.0.1.0/24"
 }
 
-variable "vcn01_subnet_pub01_display_name" {
-  default = "vcn01_subnet_pub01"
+variable "tomcat_atp_vcn_subnet_lb_display_name" {
+  default = "tomcat_atp_vcn_subnet_lb"
 }
 
-variable "vcn01_subnet_pub02_cidr_block" {
+variable "tomcat_atp_vcn_subnet_bastion_cidr_block" {
   default = "10.0.2.0/24"
 }
 
-variable "vcn01_subnet_pub02_display_name" {
-  default = "vcn01_subnet_pub02"
+variable "tomcat_atp_vcn_subnet_bastion_display_name" {
+  default = "tomcat_atp_vcn_subnet_bastion"
 }
 
-variable "vcn01_subnet_app01_cidr_block" {
+variable "tomcat_atp_vcn_subnet_app_cidr_block" {
   default = "10.0.10.0/24"
 }
 
-variable "vcn01_subnet_app01_display_name" {
-  default = "vcn01_subnet_app01"
+variable "tomcat_atp_vcn_subnet_app_display_name" {
+  default = "tomcat_atp_vcn_subnet_app"
 }
 
-variable "vcn01_subnet_db01_cidr_block" {
+variable "tomcat_atp_vcn_subnet_fss_cidr_block" {
   default = "10.0.20.0/24"
 }
 
-variable "vcn01_subnet_db01_display_name" {
-  default = "vcn01_subnet_db01"
+variable "tomcat_atp_vcn_subnet_fss_display_name" {
+  default = "tomcat_atp_vcn_subnet_fss"
+}
+
+variable "tomcat_atp_vcn_subnet_db_cidr_block" {
+  default = "10.0.30.0/24"
+}
+
+variable "tomcat_atp_vcn_subnet_db_display_name" {
+  default = "tomcat_atp_vcn_subnet_db"
 }
 
 variable "lb_shape" {
@@ -105,7 +109,7 @@ variable "instance_os" {
 
 variable "linux_os_version" {
   description = "Operating system version for all Linux instances"
-  default     = "7.9"
+  default     = "8"
 }
 
 variable "numberOfNodes" {
@@ -113,12 +117,10 @@ variable "numberOfNodes" {
 }
 
 variable "oracle_instant_client_version" {
-  #  default     = "21.1"
   default = "19.10"
 }
 
 variable "oracle_instant_client_version_short" {
-  #  default     = "21"
   default = "19.10"
 }
 
@@ -139,7 +141,7 @@ variable "atp_cpu_core_count" {
 }
 
 variable "free_tier" {
-  default = true
+  default = false
 }
 
 variable "atp_data_storage_size_in_tbs" {
@@ -147,7 +149,7 @@ variable "atp_data_storage_size_in_tbs" {
 }
 
 variable "atp_db_name" {
-  default = "ATPDB"
+  default = "TomcatATP"
 }
 
 variable "atp_db_version" {
@@ -173,7 +175,7 @@ variable "atp_license_model" {
 }
 
 variable "atp_tde_wallet_zip_file" {
-  default = "tde_wallet_ATPdb1.zip"
+  default = "tde_wallet_TomcatATP.zip"
 }
 
 variable "atp_private_endpoint_label" {

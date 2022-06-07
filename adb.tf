@@ -5,7 +5,7 @@ locals {
   atp_private_endpoint = (var.free_tier == false && var.atp_private_endpoint == true) ? true : false 
 }
 
-module "terraform-oci-arch-adb" {
+module "oci-arch-adb" {
   source                                = "github.com/oracle-devrel/terraform-oci-arch-adb"
   compartment_ocid                      = var.compartment_ocid
   adb_database_db_name                  = var.atp_db_name
@@ -21,8 +21,8 @@ module "terraform-oci-arch-adb" {
   use_existing_vcn                      = local.atp_private_endpoint
   adb_private_endpoint                  = local.atp_private_endpoint
   adb_private_endpoint_label            = local.atp_private_endpoint ? var.atp_private_endpoint_label : null
-  vcn_id                                = local.atp_private_endpoint ? oci_core_vcn.vcn01.id : null
-  adb_subnet_id                         = local.atp_private_endpoint ? oci_core_subnet.vcn01_subnet_db01.id : null
+  vcn_id                                = local.atp_private_endpoint ? oci_core_vcn.tomcat_atp_vcn.id : null
+  adb_subnet_id                         = local.atp_private_endpoint ? oci_core_subnet.tomcat_atp_vcn_subnet_db.id : null
   adb_nsg_id                            = local.atp_private_endpoint ? oci_core_network_security_group.ATPSecurityGroup.id : null
   defined_tags                          = { "${oci_identity_tag_namespace.ArchitectureCenterTagNamespace.name}.${oci_identity_tag.ArchitectureCenterTag.name}" = var.release }
 }

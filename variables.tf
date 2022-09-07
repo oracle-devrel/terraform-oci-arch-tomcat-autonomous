@@ -109,7 +109,7 @@ variable "instance_os" {
 
 variable "linux_os_version" {
   description = "Operating system version for all Linux instances"
-  default     = "8"
+  default     = "9"
 }
 
 variable "numberOfNodes" {

@@ -3,7 +3,7 @@
 
 variable "release" {
   description = "Reference Architecture Release (OCI Architecture Center)"
-  default     = "1.6"
+  default     = "1.7"
 }
 
 variable "tenancy_ocid" {}
@@ -109,7 +109,7 @@ variable "instance_os" {
 
 variable "linux_os_version" {
   description = "Operating system version for all Linux instances"
-  default     = "8"
+  default     = "9"
 }
 
 variable "numberOfNodes" {
